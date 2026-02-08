@@ -2,7 +2,7 @@
 > Project build between March 2019 to January 2020, Published February 2026. 7 years ago, it was created through independent research and experimentation during covid, reviewing documentation on stack-overflow and github and YouTube tutorials, during the time, there was no modern AI/LLM coding assistance.
 
 **Full redacted report** See PDF report `publish1.pdf` 200 pages, 45,000 words, contains full system A-Z breakdown for reproducibility.
-**Sliced & Sped-up Video** Initially 1 hour testing video now 14 minutes of system walk through. `https`
+**Sliced & Sped-up Video** Initially 1 hour testing video now 14 minutes of system walk through. `https://www.youtube.com/watch?v=mgqsi3ZWcYA`
 
 core_algos and other are unedited files from the original project, the main part of the project is the custom search and recommendation algorithm. 
 The HTML template is used to show how python (app.py) is connected using jinja2, google ajax is now depreciation so it has been removed, so has the bootstrap CCS, but the dynamic JavaScript is shown on the website.
