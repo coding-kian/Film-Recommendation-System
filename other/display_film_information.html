@@ -1,0 +1,244 @@
+{% extends "layout.html" %}
+{% block content %}
+{% if recommendation_page %}
+<article class="media content-section">
+  <div class="media-body">
+    <h2 class="article-title">Recommendation Generation</h2>
+    <form action="{{ url_for('saving_the_recommendations_to_database') }}">
+      <span id="recommendation-image">
+      </span>
+      <button class="btn btn-primary" onClick="recommendationWaitingImage()"> New Recommendations </button>
+    </form>
+  </div>
+</article>
+{% endif %}
+
+<div>
+  {% if amount and amount != results|length%}
+  <br>
+  <span class="label success">Filtered through: {{ amount }} Films, to get the top {{results|length}}</span>
+  <br>
+  <br>
+  {% endif %}
+</div>
+
+{% if films|length != 0 %}
+<article class="media content-section">
+  <div class="media-body">
+    <div class="article-metadata">
+      <h2> Order By </h2>
+    </div>
+    ↓ - Highest to Lowest
+    <br>
+    ↑ - Lowest to Highest
+    <br>
+    <form method="POST" action="{{ url_for('order_films_from_requested_attribute') }}">
+      <select name="sort-attribute">
+        <option>Revenue↓</option>
+        <option>Revenue↑</option>
+        <option>Budget↓</option>
+        <option>Budget↑</option>
+        <option>Release↓</option>
+        <option>Release↑</option>
+        <option>Runtime↓</option>
+        <option>Runtime↑</option>
+      </select>
+      <br>
+      <button class="btn btn-primary"
+        value="{{films}}|||{{actors}}|||{{directors}}|||{{genres}}|||{{languages}}|||{{title}}|||{{results}}"
+        name="order-films-data-button"> Order </button>
+      {% if ordered_by %}
+      Currently ordered by {{ordered_by}}
+      {% endif %}
+    </form>
+  </div>
+</article>
+
+{% for film in films %}
+<article class="media content-section">
+  <div class="media-body">
+    <div class="article-metadata">
+      {% if film.actors[0] != 888888888888 %}
+      <button class="btn btn-primary" data-toggle="modal" data-target="#Actor{{ film.id }}">
+        Actors
+      </button>
+      {% endif %}
+      {% if film.directors[0] != 888888888888 %}
+      <button class="btn btn-primary" data-toggle="modal" data-target="#Director{{ film.id }}">
+        Directors
+      </button>
+      {% endif %}
+      <small> Release Date:- {{ film.date }}{{ film.year }}</small>
+    </div>
+
+    <h2 class="article-title">{{ film.title }}</h2>
+    <div>
+      <img title="{{ film.poster }}" src="{{ film.url }}" onerror="src='https://i.imgur.com/pleyMQq.png'">
+      <div class="description-box" id="description{{ film.id }}">
+        <button class="description_button btn button-style"
+          onClick="descriptionOfFilm('{{ film.id }}')">Description?</button>
+      </div>
+      <div>
+        <p>
+          {% if film.languages[0] != 75 %}
+          Languages:
+          {% for i in film.languages %}
+          {{languages[i]}}
+          {% if i != film.languages[-1] %}
+          ,
+          {% endif %}
+          {% endfor %}
+          {% endif %}
+        </p>
+        <p>
+          {% if film.genres[0] != 1 %}
+          Genres:
+          {% for i in film.genres %}
+          {{genres[i]}}
+          {% if i != film.genres[-1] %}
+          ,
+          {% endif %}
+          {% endfor %}
+          {% endif %}
+        </p>
+        <p>
+          {% if film.length != 0 %}
+          {{film.length}} Minutes long
+          {% endif %}
+        </p>
+        <p>
+          {% if film.budget != 0 %}
+          Budget: ${{ "{0:,}".format(film.budget) }}
+          {% endif %}
+        </p>
+        <p>
+          {% if film.revenue != 0 %}
+          Revenue: ${{ "{0:,}".format(film.revenue) }}
+          {% endif %}
+        </p>
+        <p>
+          {% if film.colour != "Unknown" %}
+          Film Is In {{film.colour}}
+          {% endif %}
+        </p>
+        <div>
+          <span id="favourite-checker{{film.id}}">
+            {% if film.id not in current_favourites %}
+            <button class="btn button-style" onClick="favouritingButton('{{ film.id }}')">Favourite</button>
+            {% else %}
+            <button class="btn unfavourite-button" onClick="unfavouritingButton('{{ film.id }}')">UnFavourite</button>
+            {% endif %}
+          </span>
+          <button class="btn btn-primary" data-toggle="modal" data-target="#Rate{{ film.id }}">
+            Rate Film
+          </button>
+          {% if recommendation_page %}
+          <br>
+          <br>
+          <span id="liked-recommendation{{film.id}}">
+            <button class="btn button-style" onClick="userLikedRecommendation('{{ film.id }}')">
+              Good Recommendation
+            </button>
+          </span>
+          <br>
+          <span id="not-liked-recommendation{{film.id}}">
+            <button class="btn unfavourite-button" onClick="userNotLikedRecommendation('{{ film.id }}')">
+              Bad Recommendation
+            </button>
+          </span>
+          {% endif %}
+          <br>
+          {% if film.id in rated_film %}
+          Currently rated or recommendation liked or disliked
+          {% endif %}
+        </div>
+</article>
+
+{% for person_type in ["Actor", "Director"] %}
+<div class="modal fade" id="{{ person_type }}{{ film.id }}">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">{{person_type}}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span>&times;</span>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        {% if person_type == "Actor" %}
+        {% for act in film.actors %}
+        <a href="{{ url_for('information_for_single_person', is_actor = 'actor', person_id = act) }}">
+          <p> {{actors[act][0]}}<img title="{{actors[act][0]}}" src="{{actors[act][1]}}"
+              onerror="src='https://i.imgur.com/pleyMQq.png'" class="to-right person-image">
+          </p><br>
+        </a>
+        {% endfor %}
+
+        {% else %}
+        {% for dir in film.directors %}
+        <a href="{{ url_for('information_for_single_person', is_actor = 'director', person_id = dir) }}">
+          <p> {{directors[dir][0]}}<img title="{{directors[dir][0]}}" src="{{directors[dir][1]}}"
+              onerror="src='https://i.imgur.com/pleyMQq.png'" class="to-right person-image"></p><br>
+        </a>
+        {% endfor %}
+        {% endif %}
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endfor %}
+
+<div class="modal fade" id="Rate{{ film.id }}">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Rate</h5>
+        <button class="close" data-dismiss="modal" aria-label="Close">
+          <span">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        {% for rating_question_and_id in ratings %}
+        <span id="rate-checker{{film.id}}">
+          {{ rating_question_and_id[1] }}
+          <select id="{{ rating_question_and_id[0] }}{{ film.id }}" class="to-right">
+            <option>N/A</option>
+            {% for i in range(1,11) %}
+            <option>{{ i }}</option>
+            {% endfor %}
+          </select>
+          <br>
+          {% endfor %}
+          <button class="btn btn-primary" onClick="addsRatings('{{ film.id }}')">Rate</button>
+        </span>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endfor %}
+
+<span id="waiting-image">
+</span>
+
+{% if (results|length) > 10 %}
+{% for page_numbers in range(((results|length)/10)|round(0,"ceil")|int) %}
+<form method="POST" action="{{ url_for('displaying_10_films', page_number = page_numbers+1) }}">
+  <button name="next-page" value="{{title}}|||{{results}}" class="btn btn-primary" onClick="waitingImage()">
+    Results {{page_numbers*10+1}} - {{page_numbers*10+10}}
+  </button>
+</form>
+{% endfor %}
+{% endif %}
+{% else %}
+<img title="NoInformationAvailable" src="https://i.imgur.com/4qRgBJj.png" />
+{% endif %}
+
+{% endblock content %}
