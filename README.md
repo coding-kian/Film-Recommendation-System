@@ -1,5 +1,6 @@
-# Film Recommendation System (Historical Project)
+# Custom Recommendation Engine (Historical Project)
 > Project build between March 2019 to January 2020, Published February 2026. It was created through independent research and experimentation by reviewing documentation on stack-overflow and github and YouTube tutorials, during the time, there was no modern AI/LLM coding assistance.
+> An infrastructure intelligence focused film recommendation system, using aggregated data pipelines and a custom probabilistic recommendation model. 
 
 **Full redacted report** See PDF report `publish1.pdf` 200 pages, 45,000 words, contains full system A-Z breakdown for reproducibility.
 **Sliced & Sped-up Video** Initially 1 hour testing video now 14 minutes of system walk through. `https://www.youtube.com/watch?v=mgqsi3ZWcYA`
@@ -18,7 +19,7 @@ other/
 - `format_film_dict.py`
 - `leaderboards.py`
 
-**Database: sql.pdf**
+**Database:** `sql.pdf`
 
 ---
 
@@ -38,7 +39,7 @@ The primary focus is to showcase how I started off, with a curated snapshot, the
 
 ---
 
-# What is showcases
+# What it showcases
 - Backend deicision making: Custom scoring, ranking and probabilistic thinking, traditional likelihood moddelling
 - Search and recommendation - performance aware filtering and result quantification
 - Data moddeling with complex non-linear relationships
